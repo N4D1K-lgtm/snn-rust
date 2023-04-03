@@ -1,3 +1,6 @@
+pub trait LearningRule {
+    fn update_synaptic_weight(&mut self, pre_spike_time: f64, post_spike_time: f64) -> f64;
+}
 pub struct STDP {
     pub a_plus: f64,
     pub a_minus: f64,
