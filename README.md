@@ -6,34 +6,58 @@ To use this library in your Rust project, simply add the following line to your 
 
 ```makefile
 [dependencies]
-snn = "0.1.0"
+snn_rust = "0.1.0"
 ```
 
 ## Usage
 Here's an example of how to create a population of leaky integrate-and-fire neurons and simulate them:
 
 ```rust
-use snn::neuron::{LeakyIntegrateAndFire, Neuron};
-use snn::network::NeuronPopulation;
-use rand::prelude::*;
+// Import necessary modules from your SNN library
+use snn_rust::{
+    neuron::{LeakyIntegrateAndFire, Neuron},
+    network::Network,
+    synapse::{SpikeTimingDependentPlasticity, Synapse},
+    simulation::Simulation,
+};
 
 fn main() {
-    let mut rng = rand::thread_rng();
-    let mut lif_population = NeuronPopulation::<LeakyIntegrateAndFire>::new(10);
+    // Create neuron populations
+    let input_neurons = (0..10)
+        .map(|_| LeakyIntegrateAndFire::new(1.0, 1.0, -65.0, -55.0))
+        .collect::<Vec<_>>();
+    let output_neurons = (0..2)
+        .map(|_| LeakyIntegrateAndFire::new(1.0, 1.0, -65.0, -55.0))
+        .collect::<Vec<_>>();
 
-    let input_currents = vec![0.0; 10];
+    // Create the network and add neuron populations
+    let mut network = Network::new();
+    let input_pop = network.add_neuron_population(input_neurons);
+    let output_pop = network.add_neuron_population(output_neurons);
 
-    for i in 0..100 {
-        let dt = 0.1;
-        let input_currents = input_currents.as_slice();
-        lif_population.update_state(input_currents, dt);
+    // Create synapses with STDP learning rule
+    let synapses = (0..input_pop.len() * output_pop.len())
+        .map(|_| {
+            SpikeTimingDependentPlasticity::new(0.01, 0.01, 0.1, 20.0, 20.0)
+        })
+        .collect::<Vec<_>>();
 
-        for neuron in &lif_population.neurons {
-            if neuron.emit_spike() {
-                println!("Neuron {} fired!", i);
-            }
-        }
-    }
+    // Connect neuron populations with synapses
+    network.connect_populations(
+        &input_pop,
+        &output_pop,
+        synapses,
+        crate::snn_lib::utils::all_to_all,
+    );
+
+    // Create and configure the simulation
+    let mut simulation = Simulation::new(network, 0.1, 1000.0);
+
+    // Run the simulation
+    simulation.run();
+
+    // Retrieve and analyze the results
+    // E.g., print spike times, neuron states, or synaptic weights
 }
 ```
 
