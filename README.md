@@ -6,7 +6,7 @@ To use this library in your Rust project, simply add the following line to your 
 
 ```makefile
 [dependencies]
-snn = "0.1.0"
+snn_rust = "0.1.0"
 ```
 
 ## Usage
