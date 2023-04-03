@@ -6,8 +6,6 @@ pub trait Neuron {
 }
 
 
-
-
 /// Leaky Integrate-and-Fire (LIF) Neuron Model
 ///
 /// Reference: Gerstner, W., & Kistler, W. M. (2002). Spiking Neuron Models. Cambridge University Press.
