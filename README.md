@@ -5,6 +5,7 @@ This Rust library provides tools for developing and simulating spiking neural ne
 To use this library in your Rust project, simply add the following line to your Cargo.toml file:
 
 ```makefile
+[dependencies]
 snn = "0.1.0"
 ```
 
